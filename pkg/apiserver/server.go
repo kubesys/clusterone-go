@@ -26,19 +26,19 @@ import (
 )
 
 type ApiServer struct {
-	router *gin.Engine
+	Router *gin.Engine
 }
 
 func NewApiServer() *ApiServer {
 	server := &ApiServer{
-		router: gin.Default(),
+		Router: gin.Default(),
 	}
 	server.setupRoutes()
 	return server
 }
 
 func (s *ApiServer) setupRoutes() {
-	apiGroup := s.router.Group("/api")
+	apiGroup := s.Router.Group("/api")
 	apiGroup.Use(s.authenticateMiddleware()) // Bearer Token authentication middleware
 
 	apiGroup.POST("/resource", s.Post)

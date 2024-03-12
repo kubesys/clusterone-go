@@ -17,25 +17,9 @@
  * since:  0.1
  */
 
-package main
+package apiserver
 
-import (
-	"clusterone-go/pkg/apiserver"
-	"fmt"
-)
-
-func main() {
-	//startServer()
-	pgOrm, err := apiserver.NewPostgresOrm("postgresql://postgres:password@ip:port/db")
-	if err != nil {
-		fmt.Println("Error creating PostgreSQL ORM:", err)
-		return
-	}
-
-	pgOrm.CreateTable("test")
-}
-
-func startServer() {
-	server := apiserver.NewApiServer()
-	server.Router.Run(":8080")
+type Orm interface {
+	CreateTable(table string) error
+	DeleteTable(table string) error
 }

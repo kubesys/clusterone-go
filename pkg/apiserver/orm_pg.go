@@ -17,25 +17,29 @@
  * since:  0.1
  */
 
-package main
+package apiserver
 
 import (
-	"clusterone-go/pkg/apiserver"
-	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func main() {
-	//startServer()
-	pgOrm, err := apiserver.NewPostgresOrm("postgresql://postgres:password@ip:port/db")
-	if err != nil {
-		fmt.Println("Error creating PostgreSQL ORM:", err)
-		return
-	}
-
-	pgOrm.CreateTable("test")
+type PostgresOrm struct {
+	Db *gorm.DB
 }
 
-func startServer() {
-	server := apiserver.NewApiServer()
-	server.Router.Run(":8080")
+// NewPostgresOrm postgresql://username:password@ip:port/db
+func NewPostgresOrm(connection string) (*PostgresOrm, error) {
+	gormDB, err := gorm.Open(postgres.Open(connection), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &PostgresOrm{Db: gormDB}, nil
+}
+
+func (p *PostgresOrm) CreateTable(table string) error {
+	createTableSQL := "CREATE TABLE IF NOT EXISTS " + table + " " +
+		"(id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, age INT)"
+	return p.Db.Exec(createTableSQL).Error
 }
