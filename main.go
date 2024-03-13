@@ -25,7 +25,11 @@ import (
 )
 
 func main() {
-	//startServer()
+	startServer()
+	//testPg()
+}
+
+func testPg() {
 	pgOrm, err := apiserver.NewPostgresOrm("postgresql://postgres:password@ip:port/db")
 	if err != nil {
 		fmt.Println("Error creating PostgreSQL ORM:", err)

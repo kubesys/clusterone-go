@@ -20,8 +20,6 @@
 package apiserver
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,74 +36,31 @@ func NewApiServer() *ApiServer {
 }
 
 func (s *ApiServer) setupRoutes() {
-	apiGroup := s.Router.Group("/api")
-	apiGroup.Use(s.authenticateMiddleware()) // Bearer Token authentication middleware
-
-	apiGroup.POST("/resource", s.Post)
-	apiGroup.GET("/resource/:id", s.Get)
-	apiGroup.PUT("/resource/:id", s.Put)
-	apiGroup.DELETE("/resource/:id", s.Delete)
-}
-
-func (s *ApiServer) authenticateMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// Perform Bearer Token authentication logic here
-		token := c.GetHeader("Authorization")
-		// Validate and extract user information from the token
-
-		// Example validation (you should replace this with your actual validation logic)
-		if token != "Bearer valid_token" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			c.Abort()
-			return
-		}
-
-		// Authentication successful, proceed to the next middleware/handler
-		c.Next()
+	apiGroup := s.Router.Group("/")
+	//apiGroup.Use(s.authenticateMiddleware()) // Bearer Token authentication middleware
+	// reg_exp = "/(api|apis)/([a-z0-9._-]{2,100})/([a-z0-9._-]{2,100})/namespaces/([a-z0-9._-]{2,100})/([a-z0-9._-]{2,100})"
+	{
+		apiGroup.POST("/*any", PostHandler)
+		apiGroup.GET("/*any", GetHandler)
+		apiGroup.PUT("/*any", PutHandler)
+		apiGroup.DELETE("/*any", DeleteHandler)
 	}
 }
 
-func (s *ApiServer) Post(c *gin.Context) {
-	var requestBody map[string]interface{}
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Handle POST logic with the JSON data
-
-	c.JSON(http.StatusCreated, gin.H{"message": "Resource created successfully"})
-}
-
-func (s *ApiServer) Get(c *gin.Context) {
-	// Extract resource ID from the URL parameters
-	resourceID := c.Param("id")
-
-	// Handle GET logic with the resource ID
-
-	c.JSON(http.StatusOK, gin.H{"message": "Resource retrieved successfully", "id": resourceID})
-}
-
-func (s *ApiServer) Put(c *gin.Context) {
-	var requestBody map[string]interface{}
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Extract resource ID from the URL parameters
-	resourceID := c.Param("id")
-
-	// Handle PUT logic with the resource ID and JSON data
-
-	c.JSON(http.StatusOK, gin.H{"message": "Resource updated successfully", "id": resourceID})
-}
-
-func (s *ApiServer) Delete(c *gin.Context) {
-	// Extract resource ID from the URL parameters
-	resourceID := c.Param("id")
-
-	// Handle DELETE logic with the resource ID
-
-	c.JSON(http.StatusOK, gin.H{"message": "Resource deleted successfully", "id": resourceID})
-}
+//func (s *ApiServer) authenticateMiddleware() gin.HandlerFunc {
+//	return func(c *gin.Context) {
+//		// Perform Bearer Token authentication logic here
+//		token := c.GetHeader("Authorization")
+//		// Validate and extract user information from the token
+//
+//		// Example validation (you should replace this with your actual validation logic)
+//		if token != "Bearer valid_token" {
+//			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+//			c.Abort()
+//			return
+//		}
+//
+//		// Authentication successful, proceed to the next middleware/handler
+//		c.Next()
+//	}
+//}
